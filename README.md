@@ -47,7 +47,7 @@ update @ 2019/07/05
 
 - RX length will be save in g_u8FromMasterLen
 
-- RX flow stop at the "res == SLAVE_TRANSMIT_REPEAT_START_OR_STOP" inside the case "_state_RECEIVE_RX_" 
+- RX flow stop at the "SLAVE_TRANSMIT_REPEAT_START_OR_STOP" inside the case "_state_RECEIVE_RX_" 
 
 - Make sure to copy RX length if need to use later or it will be cleared at the "res == SLAVE_RECEIVE_ADDRESS_ACK" , check u8Temp
 
@@ -55,4 +55,6 @@ update @ 2019/07/05
 
 - TX length will be save in g_u8ToMasterLen
 
-- TX flow stop at the "res == SLAVE_TRANSMIT_DATA_NACK" inside the case "_state_TRANSMIT_TX_" 
+- TX flow stop at the "SLAVE_TRANSMIT_DATA_NACK" inside the case "_state_TRANSMIT_TX_" 
+
+- For Slave example , after receive data from Master , swap the order and output to Master , check I2C_LEFT_Master_Right_Slave_up_RX_down_TX_with_swap.jpg
