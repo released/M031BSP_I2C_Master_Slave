@@ -1,6 +1,22 @@
 # M031BSP_I2C_Master_Slave
  M031BSP_I2C_Master_Slave
 
+update @ 2019/07/09
+
+##In Master side , add UART RX IRQ , by using terminal command to test Master I2C command send to Slave
+
+- Add I2Cx_Master_example , 
+
+- In terminal (ex : teraterm) , when press 
+
+- digit 1 : Master write customize data , 2 : Master request to read data from slave , 9 : Master write then read
+
+- digit 3 : write customize data , with customise register , also include DataCnt increase 10 per press , and reset to 0 after 100
+
+- digit 4 , 5  : write customize data , with customise register , multi data
+
+- digit 6 : write customize data and request to read data
+
 update @ 2019/07/05
 
 ##In KeilC , use 2 project to separate Master and Slave (#define BUILD_MASTER_I2C , BUILD_SLAVE_I2C)

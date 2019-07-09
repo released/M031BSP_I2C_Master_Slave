@@ -26,8 +26,8 @@
 
 //#define DEBUG_LOG_MASTER_LV1
 
-#define MASTER_I2C_USE_IRQ
-//#define MASTER_I2C_USE_POLLING
+//#define MASTER_I2C_USE_IRQ
+#define MASTER_I2C_USE_POLLING
 
 
 #define SLAVE_I2C						  		(I2C0)
