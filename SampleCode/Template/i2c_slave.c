@@ -18,7 +18,7 @@ uint8_t g_u8FromMasterLen = 0;
 uint8_t g_u8FromMasterData[MAX_LEN] ={0};
 
 uint8_t slave_register_addr = 0;
-
+uint8_t g_u8temporary = 0;
 
 typedef void (*I2C_FUNC)(uint32_t u32Status);
 
@@ -50,13 +50,34 @@ void __I2Cx_Slave_Log__(uint32_t u32Status)
 	#endif
 }
 
-void I2Cx_Slave_StateMachine(uint32_t res , uint8_t* InData, uint8_t* OutData)
+void I2Cx_Slave_ReturnTx(void)
 {
 	uint8_t i = 0;	
-	static uint8_t u8Temp = 0;
+
+	// clear tx buffer
+	for (i = 0; i <64 ; i++)
+	{
+		g_u8ToMasterData[i] = 0x00;
+	}
+	// swap the data 
+	for (i = 0; i < g_u8temporary; i++)
+	{
+		g_u8ToMasterData[(g_u8temporary-1)-i] = g_u8FromMasterData[i];
+		printf("From : 0x%2X, To : 0x%2X,\r\n" , g_u8FromMasterData[i],g_u8ToMasterData[i]);
+	}
+
+	g_u8FromMasterLen = 0;
+	g_u8ToMasterLen = 0;
+	g_u8temporary = 0;
+}
+
+void I2Cx_Slave_StateMachine(uint32_t res , uint8_t* InData, uint8_t* OutData)
+{
+//	uint8_t i = 0;	
+//	static uint8_t u8Temp = 0;
 	static uint8_t cnt = _state_DEFAULT_;
 	
-	if (res == SLAVE_RECEIVE_ADDRESS_ACK)
+	if (res == SLAVE_RECEIVE_ADDRESS_ACK)	//no this ack when not receive register address
 	{
 		cnt = _state_RECEIVE_ADDRESS_;
 		slave_register_addr = 0;
@@ -89,9 +110,13 @@ void I2Cx_Slave_StateMachine(uint32_t res , uint8_t* InData, uint8_t* OutData)
 			}
 			else if (res == SLAVE_TRANSMIT_REPEAT_START_OR_STOP)	
 			{
+				// if use I2C_ReadMultiBytesOneReg , 
+				// ack will act as below , 0x60 > 0x80 > 0xA0 > 0xA8 > 0xB8
 				// TX : following with 0xA0 , and 0xA8 (data01) , continue with 0xB8 (Data02)  , end with 0xC0
 				// example : 0x60 > 0x80 (address) > 0xA8 (data00) > 0xB8  (data01)> 0xB8  (data02) > ... > 0xC0
+				
 				cnt = _state_TRANSMIT_TX_;
+				
 			}
 			break;
 
@@ -101,8 +126,19 @@ void I2Cx_Slave_StateMachine(uint32_t res , uint8_t* InData, uint8_t* OutData)
 				// end of RX
 
 				printf("g_u8FromMasterLen = %d\r\n" , g_u8FromMasterLen);
-				u8Temp = g_u8FromMasterLen;	//copy data for TX display purpose
-				cnt = _state_DEFAULT_;	//reset flag
+				g_u8temporary = g_u8FromMasterLen;
+
+				// if use I2C_ReadMultiBytes , 
+				// ack will act as below , 0xA8 > 0xB8 > 0xB8 > ... > 0xC0
+				// so change state machine here
+				// must follow with 
+				// 1) I2C_WriteMultiBytes , I2C_ReadMultiBytes , or
+				// 2) I2C_WriteMultiBytesOneReg , , I2C_ReadMultiBytes
+				// 3) directlly by using I2C_ReadMultiBytes , will be no data transfer
+				
+//				cnt = _state_DEFAULT_;	//reset flag
+				cnt = _state_TRANSMIT_TX_;
+				
 			}
 			else if (res == SLAVE_RECEIVE_DATA_ACK)
 			{
@@ -114,20 +150,14 @@ void I2Cx_Slave_StateMachine(uint32_t res , uint8_t* InData, uint8_t* OutData)
 		case _state_TRANSMIT_TX_:
 			if (res == SLAVE_TRANSMIT_ADDRESS_ACK)	
 			{
-				// first TX byte
-
-				//swap the data 
-				for (i = 0; i < u8Temp; i++)
-				{
-					g_u8ToMasterData[(u8Temp-1)-i] = g_u8FromMasterData[i];
-				}
+				I2Cx_Slave_ReturnTx();
 				
+				// first TX byte				
 				*OutData = g_u8ToMasterData[g_u8ToMasterLen++];
 			}
 			else if (res == SLAVE_TRANSMIT_DATA_NACK)	
 			{
 				// end of TX
-
 				printf("g_u8ToMasterLen = %d\r\n\r\n" , g_u8ToMasterLen);
 				cnt = _state_DEFAULT_;	//reset flag
 			}
@@ -191,11 +221,14 @@ Status 0x80 is processed
 Status 0xa0 is processed
 
 
-//TX
+//TX(below ack : with master send readRX with register)
+//if no register , ack will start with 0xA8
+
 Status 0x60 is processed
 0x 1 : 0x66
 Status 0x80 is processed
 Status 0xa0 is processed
+
 0xA8 : 0x12
 Status 0xa8 is processed
 0xB8 : 0x34
@@ -265,7 +298,6 @@ void I2Cx_SlaveTRx(uint32_t u32Status)
 	    {
 			u16Rxlen = slave_buff_addr+(g_u8DataLen_s-2);		//data buffer start	
 	        g_u8SlvData[u16Rxlen] = u8RxData;
-			u8RxData = g_u8SlvData[u16Rxlen];
 			
 			__I2Cx_Slave_LogBuffer__(u16Rxlen , u8RxData);			
 	    }
@@ -280,9 +312,10 @@ void I2Cx_SlaveTRx(uint32_t u32Status)
     {
 		u8RxData = g_u8SlvData[slave_buff_addr++];
 
-		I2Cx_Slave_StateMachine(u32Status , &u8TempData, &u8TxData);	//u8RxData no process
-			
-     	I2C_SET_DATA(SLAVE_I2C, u8TxData);	//I2C_SET_DATA(SLAVE_I2C, u8RxData);
+		I2Cx_Slave_StateMachine(u32Status , &u8RxData, &u8TxData);	
+
+//		I2C_SET_DATA(SLAVE_I2C, u8RxData);
+     	I2C_SET_DATA(SLAVE_I2C, u8TxData);	
         I2C_SET_CONTROL_REG(SLAVE_I2C, I2C_CTL_SI | I2C_CTL_AA);
 
 		__I2Cx_Slave_LogBuffer__(u32Status , u8TxData);
@@ -293,9 +326,10 @@ void I2Cx_SlaveTRx(uint32_t u32Status)
     {
 		u8RxData = g_u8SlvData[slave_buff_addr++];
 
-		I2Cx_Slave_StateMachine(u32Status , &u8TempData, &u8TxData);	//u8RxData no process	
+		I2Cx_Slave_StateMachine(u32Status , &u8RxData, &u8TxData);
 
-		I2C_SET_DATA(SLAVE_I2C, u8TxData);	//I2C_SET_DATA(SLAVE_I2C, u8RxData);
+//		I2C_SET_DATA(SLAVE_I2C, u8RxData);
+		I2C_SET_DATA(SLAVE_I2C, u8TxData);	
 		I2C_SET_CONTROL_REG(SLAVE_I2C, I2C_CTL_SI | I2C_CTL_AA);
 		
 		__I2Cx_Slave_LogBuffer__(u32Status, u8TxData);		
@@ -349,7 +383,7 @@ void I2Cx_Slave_Init(void)
     uint32_t i;
 
     /* Open I2C module and set bus clock */
-    I2C_Open(SLAVE_I2C, 100000);
+    I2C_Open(SLAVE_I2C, 400000);
     
      /* Set I2C 4 Slave Addresses */            
     I2C_SetSlaveAddr(SLAVE_I2C, 0, 0x15, 0);   /* Slave Address : 0x15 */
@@ -380,7 +414,7 @@ void I2Cx_Slave_example (void)
 {
 //	static uint32_t cnt = 0;
 
-	printf("I2Cx_Slave_example start\r\n");
+//	printf("I2Cx_Slave_example start\r\n");
 //    I2Cx_Slave_Init();
       
 		

@@ -1,6 +1,35 @@
 # M031BSP_I2C_Master_Slave
  M031BSP_I2C_Master_Slave
 
+update @ 2019/07/12
+
+##In Slave side , seperate state machine with I2C_ReadMultiBytes and I2C_ReadMultiBytesOneReg case
+
+when use I2C_ReadMultiBytes , ack will be 0xA8 > 0xB8 > 0xB8 > ... > 0xC0
+
+when use I2C_ReadMultiBytesOneReg , ack will be 0x60 > 0x80 > 0xA0 > 0xA8 > 0xB8 > 0xB8 > ... > 0xC0
+
+when using RX without send TX data , will be no data transfer
+
+- In terminal (ex : teraterm) , when press (master side)
+
+- digit 1 (TX) : Master write customize data
+
+- digit 2 (RX): Master request to read data from slave , with I2C_ReadMultiBytesOneReg
+
+- digit 7 (RX): Master request to read data from slave , with I2C_ReadMultiBytes
+
+- digit 3 (TX): write customize data , with customise register , also include DataCnt increase 10 per press , and reset to 0 after 100
+
+- digit 4 (TX): write customize data , with customise register , multi data
+
+- digit 5 (TX): write customize data , with customise register , multi data
+
+- digit 6 (TX+RX): write customize data and request to read data , I2C_WriteMultiBytes + I2C_ReadMultiBytes
+
+- digit 9 (TX+RX): Master write then read , I2C_WriteMultiBytesOneReg + I2C_ReadMultiBytesOneReg
+
+
 update @ 2019/07/09
 
 ##In Master side , add UART RX IRQ , by using terminal command to test Master I2C command send to Slave
