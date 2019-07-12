@@ -177,9 +177,11 @@ int main()
 	//I2C 0 : PC1 : SCL , PC0 : SDA
 	//I2C 1 : PA12 : SCL , PA13 : SDA
 	I2Cx_Master_Init();
+//	I2Cx_Master_example();
+	
 #elif defined (BUILD_SLAVE_I2C)	//PC1 : SCL , PC0 : SDA
 	I2Cx_Slave_Init();
-
+	I2Cx_Slave_example();
 #endif
 
 	GPIO_Init();
@@ -189,13 +191,6 @@ int main()
     /* Got no where to go, just loop forever */
     while(1)
     {
-#if defined (BUILD_MASTER_I2C)
-		//I2C 0 : PC1 : SCL , PC0 : SDA
-		//I2C 1 : PA12 : SCL , PA13 : SDA
-//		I2Cx_Master_example();
-#elif defined (BUILD_SLAVE_I2C)	//PC1 : SCL , PC0 : SDA
-		I2Cx_Slave_example();
-#endif
 
         TIMER_Delay(TIMER0, 1000000);
 		PB14 ^= 1;

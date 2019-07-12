@@ -482,7 +482,7 @@ void I2Cx_Master_example (uint8_t res)
 			printf("I2Cx_Write finish\r\n");
 			printf("addr : 0x%2X, reg : 0x%2X , data (%2d) : \r\n",addr,reg,cnt++);
 			
-			I2C_ReadMultiBytes(MASTER_I2C, addr, u8RxData, 8);
+			I2C_ReadMultiBytes(MASTER_I2C, addr, u8RxData, 16);
 	
 			printf("\r\nI2Cx_Read  finish\r\n");
 			

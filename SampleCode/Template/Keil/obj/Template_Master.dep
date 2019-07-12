@@ -762,7 +762,7 @@ I (..\..\..\Library\StdDriver\inc\usci_spi.h)(0x5C872600)
 I (..\..\..\Library\StdDriver\inc\usci_uart.h)(0x5C872600)
 I (..\..\..\Library\StdDriver\inc\wdt.h)(0x5C872600)
 I (..\..\..\Library\StdDriver\inc\wwdt.h)(0x5C872600)
-F (..\main.c)(0x5D22D0D8)(-c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\lst\\" -I ..\..\..\Library\CMSIS\Include -I ..\..\..\Library\Device\Nuvoton\M031\Include -I ..\..\..\Library\StdDriver\inc-IC:\Keil_v5\ARM\RV31\INC-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="526" -DBUILD_MASTER_I2C-o .\obj\main.o --list_dir ".\\lst\\" --list --omf_browse .\obj\main.crf --depend .\obj\main.d)
+F (..\main.c)(0x5D283C7F)(-c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\lst\\" -I ..\..\..\Library\CMSIS\Include -I ..\..\..\Library\Device\Nuvoton\M031\Include -I ..\..\..\Library\StdDriver\inc-IC:\Keil_v5\ARM\RV31\INC-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="526" -DBUILD_MASTER_I2C-o .\obj\main.o --list_dir ".\\lst\\" --list --omf_browse .\obj\main.crf --depend .\obj\main.d)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599EDB3C)
 I (..\..\..\Library\Device\Nuvoton\M031\Include\NuMicro.h)(0x5C872600)
 I (..\..\..\Library\Device\Nuvoton\M031\Include\M031Series.h)(0x5C872600)
@@ -814,8 +814,8 @@ I (..\..\..\Library\StdDriver\inc\usci_spi.h)(0x5C872600)
 I (..\..\..\Library\StdDriver\inc\usci_uart.h)(0x5C872600)
 I (..\..\..\Library\StdDriver\inc\wdt.h)(0x5C872600)
 I (..\..\..\Library\StdDriver\inc\wwdt.h)(0x5C872600)
-F (..\i2c_master.c)(0x5D28256A)(-c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\lst\\" -I ..\..\..\Library\CMSIS\Include -I ..\..\..\Library\Device\Nuvoton\M031\Include -I ..\..\..\Library\StdDriver\inc-IC:\Keil_v5\ARM\RV31\INC-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="526" -DBUILD_MASTER_I2C-o .\obj\i2c_master.o --list_dir ".\\lst\\" --list --omf_browse .\obj\i2c_master.crf --depend .\obj\i2c_master.d)
-I (..\i2c_conf.h)(0x5D2814B4)
+F (..\i2c_master.c)(0x5D2832B1)(-c --cpu Cortex-M0 -D__MICROLIB -g -O2 --apcs=interwork --split_sections --asm --interleave --asm_dir ".\\lst\\" -I ..\..\..\Library\CMSIS\Include -I ..\..\..\Library\Device\Nuvoton\M031\Include -I ..\..\..\Library\StdDriver\inc-IC:\Keil_v5\ARM\RV31\INC-IC:\Keil_v5\ARM\CMSIS\Include-D__UVISION_VERSION="526" -DBUILD_MASTER_I2C-o .\obj\i2c_master.o --list_dir ".\\lst\\" --list --omf_browse .\obj\i2c_master.crf --depend .\obj\i2c_master.d)
+I (..\i2c_conf.h)(0x5D283ABE)
 I (C:\Keil_v5\ARM\ARMCC\include\stdio.h)(0x599EDB3C)
 I (..\..\..\Library\Device\Nuvoton\M031\Include\NuMicro.h)(0x5C872600)
 I (..\..\..\Library\Device\Nuvoton\M031\Include\M031Series.h)(0x5C872600)
@@ -867,4 +867,4 @@ I (..\..\..\Library\StdDriver\inc\usci_spi.h)(0x5C872600)
 I (..\..\..\Library\StdDriver\inc\usci_uart.h)(0x5C872600)
 I (..\..\..\Library\StdDriver\inc\wdt.h)(0x5C872600)
 I (..\..\..\Library\StdDriver\inc\wwdt.h)(0x5C872600)
-F (..\i2c_slave.c)(0x5D28256F)()
+F (..\i2c_slave.c)(0x5D283B8C)()

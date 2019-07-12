@@ -24,6 +24,8 @@ typedef void (*I2C_FUNC)(uint32_t u32Status);
 
 I2C_FUNC __IO I2Cx_Slave_HandlerFn = NULL;
 
+void I2Cx_SlaveTRx(uint32_t u32Status);
+
 enum
 {
 	_state_DEFAULT_ = 0 , 
@@ -63,7 +65,7 @@ void I2Cx_Slave_ReturnTx(void)
 	for (i = 0; i < g_u8temporary; i++)
 	{
 		g_u8ToMasterData[(g_u8temporary-1)-i] = g_u8FromMasterData[i];
-		printf("From : 0x%2X, To : 0x%2X,\r\n" , g_u8FromMasterData[i],g_u8ToMasterData[i]);
+//		printf("From : 0x%2X, To : 0x%2X,\r\n" , g_u8FromMasterData[i],g_u8ToMasterData[i]);
 	}
 
 	g_u8FromMasterLen = 0;
@@ -188,7 +190,10 @@ void I2Cx_Slave_IRQHandler(void)
     else
     {
         if (I2Cx_Slave_HandlerFn != NULL)
-            I2Cx_Slave_HandlerFn(u32Status);
+        {
+			I2Cx_Slave_HandlerFn(u32Status);
+        }
+
     }
 }
 
