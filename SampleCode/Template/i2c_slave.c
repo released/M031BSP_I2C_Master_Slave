@@ -186,6 +186,17 @@ void I2Cx_Slave_IRQHandler(void)
 	
         /* Clear I2C Timeout Flag */
         I2C_ClearTimeoutFlag(SLAVE_I2C); 
+
+        /* Disable time-out */
+//        SLAVE_I2C->TOCTL &= ~I2C_TOCTL_TOCEN_Msk;
+		I2C_DisableTimeout(SLAVE_I2C);
+        
+        /* Release bus and let slave back to default state */
+        SLAVE_I2C->BUSTCTL |= I2C_BUSTCTL_TORSTEN_Msk;
+        SLAVE_I2C->BUSTCTL &= ~I2C_BUSTCTL_TORSTEN_Msk;
+
+
+
     }    
     else
     {
@@ -274,6 +285,10 @@ void I2Cx_SlaveTRx(uint32_t u32Status)
         g_u8DataLen_s = 0;
 
 		I2Cx_Slave_StateMachine(u32Status , &u8TempData , &u8TempData);
+
+        /* Enable time-out */
+        SLAVE_I2C->TOCTL |= I2C_TOCTL_TOCEN_Msk;
+
 		
         I2C_SET_CONTROL_REG(SLAVE_I2C, I2C_CTL_SI | I2C_CTL_AA);
 
@@ -319,6 +334,9 @@ void I2Cx_SlaveTRx(uint32_t u32Status)
 
 		I2Cx_Slave_StateMachine(u32Status , &u8RxData, &u8TxData);	
 
+        /* Enable time-out */
+        SLAVE_I2C->TOCTL |= I2C_TOCTL_TOCEN_Msk;		
+
 //		I2C_SET_DATA(SLAVE_I2C, u8RxData);
      	I2C_SET_DATA(SLAVE_I2C, u8TxData);	
         I2C_SET_CONTROL_REG(SLAVE_I2C, I2C_CTL_SI | I2C_CTL_AA);
@@ -362,6 +380,9 @@ void I2Cx_SlaveTRx(uint32_t u32Status)
     {
         g_u8DataLen_s = 0;
 		I2Cx_Slave_StateMachine(u32Status , &u8TempData, &u8TempData);
+
+        /* Disable time-out */
+        SLAVE_I2C->TOCTL &= ~I2C_TOCTL_TOCEN_Msk;
 		
         I2C_SET_CONTROL_REG(SLAVE_I2C, I2C_CTL_SI | I2C_CTL_AA);
 
@@ -369,8 +390,15 @@ void I2Cx_SlaveTRx(uint32_t u32Status)
     }
     else if(u32Status == BUS_ERROR) //0x00
     {
-		I2C_SET_CONTROL_REG(SLAVE_I2C, I2C_CTL_STO_SI_AA);
-		I2C_SET_CONTROL_REG(SLAVE_I2C, I2C_CTL_SI_AA);
+        /* Disable Time-out */
+        SLAVE_I2C->TOCTL &= ~I2C_TOCTL_TOCEN_Msk;
+
+        /* Recover bus */
+        I2C_SET_CONTROL_REG(SLAVE_I2C, I2C_CTL_STO_SI);
+        I2C_SET_CONTROL_REG(SLAVE_I2C, I2C_CTL_SI);
+        
+        /* Back to not addressed mode */
+        I2C_SET_CONTROL_REG(SLAVE_I2C, I2C_CTL_SI_AA);
 		
 		__I2Cx_Slave_Log__(u32Status);		
     }																	

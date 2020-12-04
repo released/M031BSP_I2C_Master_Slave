@@ -145,6 +145,13 @@ void I2Cx_MasterRx_multi(uint32_t u32Status)
     }
     else
     {
+        I2C_SET_CONTROL_REG(MASTER_I2C, I2C_CTL_STO_SI);
+        I2C_DisableInt(MASTER_I2C);
+        if(MASTER_I2C == I2C0)
+			NVIC_DisableIRQ(I2C0_IRQn);
+		else
+        	NVIC_DisableIRQ(I2C1_IRQn); 
+	
 		#if defined (DEBUG_LOG_MASTER_LV1)
         /* TO DO */
         printf("I2Cx_MasterRx_multi Status 0x%x is NOT processed\n", u32Status);
@@ -208,6 +215,14 @@ void I2Cx_MasterTx_multi(uint32_t u32Status)
     }		
     else
     {
+
+        I2C_SET_CONTROL_REG(MASTER_I2C, I2C_CTL_STO_SI);
+        I2C_DisableInt(MASTER_I2C);
+        if(MASTER_I2C == I2C0)
+			NVIC_DisableIRQ(I2C0_IRQn);
+		else
+        	NVIC_DisableIRQ(I2C1_IRQn);
+	
 		#if defined (DEBUG_LOG_MASTER_LV1)
         /* TO DO */
         printf("I2Cx_MasterTx_multi Status 0x%x is NOT processed\n", u32Status);
@@ -464,8 +479,8 @@ void I2Cx_Master_example (uint8_t res)
 
 			//calculate crc
 			u8CalData[0] = reg ;	//flag
-			u8CalData[1] = 0x13;	//read page
-			u8CalData[2] = 0x57;	//type			
+			u8CalData[1] = 0x00;	//read page
+			u8CalData[2] = 0x00;	//type			
 			crc = CRC_Get(u8CalData , 3);
 			
 			//fill data
@@ -479,10 +494,10 @@ void I2Cx_Master_example (uint8_t res)
 			#elif defined (MASTER_I2C_USE_POLLING)
 			I2C_WriteMultiBytes(MASTER_I2C , addr ,u8TxData , len);
 
-			printf("I2Cx_Write finish\r\n");
-			printf("addr : 0x%2X, reg : 0x%2X , data (%2d) : \r\n",addr,reg,cnt++);
+//			printf("I2Cx_Write finish\r\n");
+//			printf("addr : 0x%2X, reg : 0x%2X , data (%2d) : \r\n",addr,reg,cnt++);
 			
-			I2C_ReadMultiBytes(MASTER_I2C, addr, u8RxData, 16);
+			I2C_ReadMultiBytes(MASTER_I2C, addr, u8RxData, 9);//16
 	
 			printf("\r\nI2Cx_Read  finish\r\n");
 			
