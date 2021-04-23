@@ -1,6 +1,6 @@
 
 #include "i2c_conf.h"
-
+//#include "main.h"
 
 /*---------------------------------------------------------------------------------------------------------*/
 /* Global variables                                                                                        */
@@ -65,7 +65,7 @@ void I2Cx_Slave_ReturnTx(void)
 	for (i = 0; i < g_u8temporary; i++)
 	{
 		g_u8ToMasterData[(g_u8temporary-1)-i] = g_u8FromMasterData[i];
-//		printf("From : 0x%2X, To : 0x%2X,\r\n" , g_u8FromMasterData[i],g_u8ToMasterData[i]);
+		printf("From : 0x%2X, To : 0x%2X,\r\n" , g_u8FromMasterData[i],g_u8ToMasterData[i]);
 	}
 
 	g_u8FromMasterLen = 0;
@@ -96,7 +96,7 @@ void I2Cx_Slave_StateMachine(uint32_t res , uint8_t* InData, uint8_t* OutData)
 				if(g_u8DataLen_s == 1)
 				{
 					slave_register_addr = slave_buff_addr;
-					printf("slave_register_addr = 0x%2X\r\n" , slave_register_addr);
+//					set_flag(flag_state_RECEIVE_ADDRESS_ , ENABLE);
 				}
 				cnt = _state_CHECK_RX_OR_TX_;
 			}
@@ -127,7 +127,8 @@ void I2Cx_Slave_StateMachine(uint32_t res , uint8_t* InData, uint8_t* OutData)
 			{
 				// end of RX
 
-				printf("g_u8FromMasterLen = %d\r\n" , g_u8FromMasterLen);
+//				set_flag(flag_state_RECEIVE_RX_ , ENABLE);
+
 				g_u8temporary = g_u8FromMasterLen;
 
 				// if use I2C_ReadMultiBytes , 
@@ -160,7 +161,8 @@ void I2Cx_Slave_StateMachine(uint32_t res , uint8_t* InData, uint8_t* OutData)
 			else if (res == SLAVE_TRANSMIT_DATA_NACK)	
 			{
 				// end of TX
-				printf("g_u8ToMasterLen = %d\r\n\r\n" , g_u8ToMasterLen);
+
+//				set_flag(flag_SLAVE_TRANSMIT_DATA_NACK , ENABLE);
 				cnt = _state_DEFAULT_;	//reset flag
 			}
 			else if (res == SLAVE_TRANSMIT_DATA_ACK)
@@ -179,7 +181,7 @@ void I2Cx_Slave_IRQHandler(void)
     uint32_t u32Status;
 
     u32Status = I2C_GET_STATUS(SLAVE_I2C);
-
+#if 0
     if (I2C_GET_TIMEOUT_FLAG(SLAVE_I2C))
     {
 //		printf("Clear I2C Timeout Flag\r\n");
@@ -199,6 +201,7 @@ void I2Cx_Slave_IRQHandler(void)
 
     }    
     else
+#endif
     {
         if (I2Cx_Slave_HandlerFn != NULL)
         {
@@ -279,6 +282,8 @@ void I2Cx_SlaveTRx(uint32_t u32Status)
 	uint8_t u8TempData = 0;	
 	uint16_t u16Rxlen = 0;
 
+//	printf("I2Cx_SlaveTRx : 0x%2X\r\n" ,u32Status );
+
 	
     if(u32Status == SLAVE_RECEIVE_ADDRESS_ACK) //0x60                    	/* Own SLA+W has been receive; ACK has been return */
     {
@@ -287,7 +292,7 @@ void I2Cx_SlaveTRx(uint32_t u32Status)
 		I2Cx_Slave_StateMachine(u32Status , &u8TempData , &u8TempData);
 
         /* Enable time-out */
-        SLAVE_I2C->TOCTL |= I2C_TOCTL_TOCEN_Msk;
+//        SLAVE_I2C->TOCTL |= I2C_TOCTL_TOCEN_Msk;
 
 		
         I2C_SET_CONTROL_REG(SLAVE_I2C, I2C_CTL_SI | I2C_CTL_AA);
@@ -335,7 +340,7 @@ void I2Cx_SlaveTRx(uint32_t u32Status)
 		I2Cx_Slave_StateMachine(u32Status , &u8RxData, &u8TxData);	
 
         /* Enable time-out */
-        SLAVE_I2C->TOCTL |= I2C_TOCTL_TOCEN_Msk;		
+//        SLAVE_I2C->TOCTL |= I2C_TOCTL_TOCEN_Msk;		
 
 //		I2C_SET_DATA(SLAVE_I2C, u8RxData);
      	I2C_SET_DATA(SLAVE_I2C, u8TxData);	
@@ -382,7 +387,7 @@ void I2Cx_SlaveTRx(uint32_t u32Status)
 		I2Cx_Slave_StateMachine(u32Status , &u8TempData, &u8TempData);
 
         /* Disable time-out */
-        SLAVE_I2C->TOCTL &= ~I2C_TOCTL_TOCEN_Msk;
+//        SLAVE_I2C->TOCTL &= ~I2C_TOCTL_TOCEN_Msk;
 		
         I2C_SET_CONTROL_REG(SLAVE_I2C, I2C_CTL_SI | I2C_CTL_AA);
 
@@ -391,7 +396,7 @@ void I2Cx_SlaveTRx(uint32_t u32Status)
     else if(u32Status == BUS_ERROR) //0x00
     {
         /* Disable Time-out */
-        SLAVE_I2C->TOCTL &= ~I2C_TOCTL_TOCEN_Msk;
+//        SLAVE_I2C->TOCTL &= ~I2C_TOCTL_TOCEN_Msk;
 
         /* Recover bus */
         I2C_SET_CONTROL_REG(SLAVE_I2C, I2C_CTL_STO_SI);
@@ -419,15 +424,15 @@ void I2Cx_Slave_Init(void)
     I2C_Open(SLAVE_I2C, 400000);
     
      /* Set I2C 4 Slave Addresses */            
-    I2C_SetSlaveAddr(SLAVE_I2C, 0, 0x15, 0);   /* Slave Address : 0x15 */
-    I2C_SetSlaveAddr(SLAVE_I2C, 1, 0x35, 0);   /* Slave Address : 0x35 */
-    I2C_SetSlaveAddr(SLAVE_I2C, 2, 0x55, 0);   /* Slave Address : 0x55 */
-    I2C_SetSlaveAddr(SLAVE_I2C, 3, 0x75, 0);   /* Slave Address : 0x75 */
+    I2C_SetSlaveAddr(SLAVE_I2C, 0, 0x6A , 0);   /* Slave Address : 0x15 */
+//    I2C_SetSlaveAddr(SLAVE_I2C, 1, 0x35, 0);   /* Slave Address : 0x35 */
+//    I2C_SetSlaveAddr(SLAVE_I2C, 2, 0x55, 0);   /* Slave Address : 0x55 */
+//    I2C_SetSlaveAddr(SLAVE_I2C, 3, 0x75, 0);   /* Slave Address : 0x75 */
 
-    I2C_SetSlaveAddrMask(SLAVE_I2C, 0, 0x01);
-    I2C_SetSlaveAddrMask(SLAVE_I2C, 1, 0x04);
-    I2C_SetSlaveAddrMask(SLAVE_I2C, 2, 0x01);
-    I2C_SetSlaveAddrMask(SLAVE_I2C, 3, 0x04);
+//    I2C_SetSlaveAddrMask(SLAVE_I2C, 0, 0x01);
+//    I2C_SetSlaveAddrMask(SLAVE_I2C, 1, 0x04);
+//    I2C_SetSlaveAddrMask(SLAVE_I2C, 2, 0x01);
+//    I2C_SetSlaveAddrMask(SLAVE_I2C, 3, 0x04);
 
     /* Enable I2C interrupt */
     I2C_EnableInt(SLAVE_I2C);

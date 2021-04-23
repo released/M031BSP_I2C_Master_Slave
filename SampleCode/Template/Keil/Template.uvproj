@@ -554,11 +554,6 @@
               <FilePath>..\..\..\Library\StdDriver\src\clk.c</FilePath>
             </File>
             <File>
-              <FileName>adc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Library\StdDriver\src\adc.c</FilePath>
-            </File>
-            <File>
               <FileName>gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\Library\StdDriver\src\gpio.c</FilePath>
@@ -569,44 +564,19 @@
               <FilePath>..\..\..\Library\StdDriver\src\i2c.c</FilePath>
             </File>
             <File>
-              <FileName>pdma.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Library\StdDriver\src\pdma.c</FilePath>
-            </File>
-            <File>
-              <FileName>pwm.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Library\StdDriver\src\pwm.c</FilePath>
-            </File>
-            <File>
               <FileName>timer.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\Library\StdDriver\src\timer.c</FilePath>
             </File>
             <File>
-              <FileName>wdt.c</FileName>
+              <FileName>sys.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Library\StdDriver\src\wdt.c</FilePath>
-            </File>
-            <File>
-              <FileName>wwdt.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Library\StdDriver\src\wwdt.c</FilePath>
-            </File>
-            <File>
-              <FileName>fmc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Library\StdDriver\src\fmc.c</FilePath>
+              <FilePath>..\..\..\Library\StdDriver\src\sys.c</FilePath>
             </File>
             <File>
               <FileName>crc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\Library\StdDriver\src\crc.c</FilePath>
-            </File>
-            <File>
-              <FileName>sys.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Library\StdDriver\src\sys.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1231,11 +1201,6 @@
               <FilePath>..\..\..\Library\StdDriver\src\clk.c</FilePath>
             </File>
             <File>
-              <FileName>adc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Library\StdDriver\src\adc.c</FilePath>
-            </File>
-            <File>
               <FileName>gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\Library\StdDriver\src\gpio.c</FilePath>
@@ -1246,44 +1211,19 @@
               <FilePath>..\..\..\Library\StdDriver\src\i2c.c</FilePath>
             </File>
             <File>
-              <FileName>pdma.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Library\StdDriver\src\pdma.c</FilePath>
-            </File>
-            <File>
-              <FileName>pwm.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Library\StdDriver\src\pwm.c</FilePath>
-            </File>
-            <File>
               <FileName>timer.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\Library\StdDriver\src\timer.c</FilePath>
             </File>
             <File>
-              <FileName>wdt.c</FileName>
+              <FileName>sys.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\Library\StdDriver\src\wdt.c</FilePath>
-            </File>
-            <File>
-              <FileName>wwdt.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Library\StdDriver\src\wwdt.c</FilePath>
-            </File>
-            <File>
-              <FileName>fmc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Library\StdDriver\src\fmc.c</FilePath>
+              <FilePath>..\..\..\Library\StdDriver\src\sys.c</FilePath>
             </File>
             <File>
               <FileName>crc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\Library\StdDriver\src\crc.c</FilePath>
-            </File>
-            <File>
-              <FileName>sys.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\Library\StdDriver\src\sys.c</FilePath>
             </File>
           </Files>
         </Group>

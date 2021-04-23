@@ -8,6 +8,14 @@
 #include <stdio.h>
 #include "NuMicro.h"
 
+volatile uint32_t BitFlag = 0;
+#define BitFlag_ON(flag)							(BitFlag|=flag)
+#define BitFlag_OFF(flag)							(BitFlag&=~flag)
+#define BitFlag_READ(flag)							((BitFlag&flag)?1:0)
+#define ReadBit(bit)								(uint32_t)(1<<bit)
+#define is_flag_set(idx)							(BitFlag_READ(ReadBit(idx)))
+#define set_flag(idx,en)							( (en == 1) ? (BitFlag_ON(ReadBit(idx))) : (BitFlag_OFF(ReadBit(idx))))
+
 
 
 #if defined (BUILD_MASTER_I2C)	//PA12 : SCL , PA13 : SDA
@@ -51,6 +59,28 @@ void I2Cx_Slave_example (void);
 #endif
 
 
+void I2Cx_Slave_printf(void)
+{	
+//	if (is_flag_set(flag_state_RECEIVE_ADDRESS_))
+//	{
+//		set_flag(flag_state_RECEIVE_ADDRESS_ , DISABLE);
+//		printf("slave_register_addr = 0x%2X\r\n" , slave_register_addr);
+//	}
+
+// 	if (is_flag_set(flag_state_RECEIVE_RX_))
+// 	{
+//		set_flag(flag_state_RECEIVE_RX_ , DISABLE);
+//		printf("g_u8FromMasterLen = %d\r\n" , g_u8FromMasterLen);	
+// 	}
+
+//	if (is_flag_set(flag_SLAVE_TRANSMIT_DATA_NACK))
+//	{
+//		set_flag(flag_SLAVE_TRANSMIT_DATA_NACK , DISABLE);		
+//		printf("g_u8ToMasterLen = %d\r\n\r\n" , g_u8ToMasterLen);
+//	}
+
+}
+
 void GPIO_Init (void)
 {
     GPIO_SetMode(PB, BIT14, GPIO_MODE_OUTPUT);
@@ -67,7 +97,8 @@ void TMR3_IRQHandler(void)
 	
 		if (CNT++ >= 1000)
 		{		
-			CNT = 0;			
+			CNT = 0;	
+			PB14 ^= 1;
 		}
     }
 }
@@ -192,8 +223,10 @@ int main()
     while(1)
     {
 
-        TIMER_Delay(TIMER0, 1000000);
-		PB14 ^= 1;
+//        TIMER_Delay(TIMER0, 1000000);
+//		PB14 ^= 1;
+
+		I2Cx_Slave_printf();
 
     }
 }

@@ -171,7 +171,7 @@ Default_Handler PROC
                 EXPORT  GPCDEF_IRQHandler         [WEAK]
                 EXPORT  PWM0_IRQHandler           [WEAK]
                 EXPORT  PWM1_IRQHandler           [WEAK]
-                EXPORT  TMR0_IRQHandler           [WEAK]
+                EXPORT  TMR0_IRQHandler           [WEAK]	
                 EXPORT  TMR1_IRQHandler           [WEAK]
                 EXPORT  TMR2_IRQHandler           [WEAK]
                 EXPORT  TMR3_IRQHandler           [WEAK]

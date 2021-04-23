@@ -171,6 +171,18 @@ uint32_t CLK_GetPCLK1Freq(void)
 }
 
 /**
+  * @brief      Get HCLK frequency
+  * @param      None
+  * @return     HCLK frequency
+  * @details    This function get HCLK frequency. The frequency unit is Hz.
+  */
+uint32_t CLK_GetHCLKFreq(void)
+{
+    SystemCoreClockUpdate();
+    return SystemCoreClock;
+}
+
+/**
   * @brief      Get CPU frequency
   * @param      None
   * @return     CPU frequency
@@ -185,22 +197,30 @@ uint32_t CLK_GetCPUFreq(void)
 /**
   * @brief      Set HCLK frequency
   * @param[in]  u32Hclk is HCLK frequency. The range of u32Hclk is 25.5MHz ~ 48MHz.
+*               NOTE: For M031_G/I, the HCLK frequency up to 72MHz.
   * @return     HCLK frequency
   * @details    This function is used to set HCLK frequency. The frequency unit is Hz. \n
   *             It would configure PLL frequency to 51MHz ~ 96MHz,
   *             set HCLK clock divider as 2 and switch HCLK clock source to PLL. \n
   *             The register write-protection function should be disabled before using this function.
+  *             NOTE: For M031_G/I, the PLL frequency up to 144MHz.
   */
 uint32_t CLK_SetCoreClock(uint32_t u32Hclk)
 {
     uint32_t u32HIRCSTB;
+    uint32_t u32HCLK_UpperLimit;
 
     /* Read HIRC clock source stable flag */
     u32HIRCSTB = CLK->STATUS & CLK_STATUS_HIRCSTB_Msk;
 
-    /* The range of u32Hclk is 25.5 MHz ~ 48 MHz */
-    if(u32Hclk > FREQ_48MHZ)
-        u32Hclk = FREQ_48MHZ;
+    /* The range of u32Hclk is 25.5 MHz ~ 48 MHz or 72 MHz */
+    if ((GET_CHIP_SERIES_NUM == CHIP_SERIES_NUM_G) || (GET_CHIP_SERIES_NUM == CHIP_SERIES_NUM_I))
+        u32HCLK_UpperLimit = FREQ_72MHZ;
+    else
+        u32HCLK_UpperLimit = FREQ_48MHZ;
+
+    if(u32Hclk > u32HCLK_UpperLimit)
+        u32Hclk = u32HCLK_UpperLimit;
     if(u32Hclk < (FREQ_51MHZ >> 1))
         u32Hclk = (FREQ_51MHZ >> 1);
 
@@ -343,14 +363,52 @@ void CLK_SetHCLK(uint32_t u32ClkSrc, uint32_t u32ClkDiv)
   * |\ref UART2_MODULE   |\ref CLK_CLKSEL3_UART2SEL_HIRC        |\ref CLK_CLKDIV4_UART2(x) |
   * |\ref UART2_MODULE   |\ref CLK_CLKSEL3_UART2SEL_PCLK0       |\ref CLK_CLKDIV4_UART2(x) |
   * |\ref UART2_MODULE   |\ref CLK_CLKSEL3_UART2SEL_LIRC        |\ref CLK_CLKDIV4_UART2(x) |
+  * |\ref UART3_MODULE   |\ref CLK_CLKSEL3_UART3SEL_HXT         |\ref CLK_CLKDIV4_UART3(x) |
+  * |\ref UART3_MODULE   |\ref CLK_CLKSEL3_UART3SEL_PLL         |\ref CLK_CLKDIV4_UART3(x) |
+  * |\ref UART3_MODULE   |\ref CLK_CLKSEL3_UART3SEL_LXT         |\ref CLK_CLKDIV4_UART3(x) |
+  * |\ref UART3_MODULE   |\ref CLK_CLKSEL3_UART3SEL_HIRC        |\ref CLK_CLKDIV4_UART3(x) |
+  * |\ref UART3_MODULE   |\ref CLK_CLKSEL3_UART3SEL_PCLK1       |\ref CLK_CLKDIV4_UART3(x) |
+  * |\ref UART3_MODULE   |\ref CLK_CLKSEL3_UART3SEL_LIRC        |\ref CLK_CLKDIV4_UART3(x) |
+  * |\ref UART4_MODULE   |\ref CLK_CLKSEL3_UART4SEL_HXT         |\ref CLK_CLKDIV4_UART4(x) |
+  * |\ref UART4_MODULE   |\ref CLK_CLKSEL3_UART4SEL_PLL         |\ref CLK_CLKDIV4_UART4(x) |
+  * |\ref UART4_MODULE   |\ref CLK_CLKSEL3_UART4SEL_LXT         |\ref CLK_CLKDIV4_UART4(x) |
+  * |\ref UART4_MODULE   |\ref CLK_CLKSEL3_UART4SEL_HIRC        |\ref CLK_CLKDIV4_UART4(x) |
+  * |\ref UART4_MODULE   |\ref CLK_CLKSEL3_UART4SEL_PCLK0       |\ref CLK_CLKDIV4_UART4(x) |
+  * |\ref UART4_MODULE   |\ref CLK_CLKSEL3_UART4SEL_LIRC        |\ref CLK_CLKDIV4_UART4(x) |
+  * |\ref UART5_MODULE   |\ref CLK_CLKSEL3_UART5SEL_HXT         |\ref CLK_CLKDIV4_UART5(x) |
+  * |\ref UART5_MODULE   |\ref CLK_CLKSEL3_UART5SEL_PLL         |\ref CLK_CLKDIV4_UART5(x) |
+  * |\ref UART5_MODULE   |\ref CLK_CLKSEL3_UART5SEL_LXT         |\ref CLK_CLKDIV4_UART5(x) |
+  * |\ref UART5_MODULE   |\ref CLK_CLKSEL3_UART5SEL_HIRC        |\ref CLK_CLKDIV4_UART5(x) |
+  * |\ref UART5_MODULE   |\ref CLK_CLKSEL3_UART5SEL_PCLK1       |\ref CLK_CLKDIV4_UART5(x) |
+  * |\ref UART5_MODULE   |\ref CLK_CLKSEL3_UART5SEL_LIRC        |\ref CLK_CLKDIV4_UART5(x) |
+  * |\ref UART6_MODULE   |\ref CLK_CLKSEL3_UART6SEL_HXT         |\ref CLK_CLKDIV4_UART6(x) |
+  * |\ref UART6_MODULE   |\ref CLK_CLKSEL3_UART6SEL_PLL         |\ref CLK_CLKDIV4_UART6(x) |
+  * |\ref UART6_MODULE   |\ref CLK_CLKSEL3_UART6SEL_LXT         |\ref CLK_CLKDIV4_UART6(x) |
+  * |\ref UART6_MODULE   |\ref CLK_CLKSEL3_UART6SEL_HIRC        |\ref CLK_CLKDIV4_UART6(x) |
+  * |\ref UART6_MODULE   |\ref CLK_CLKSEL3_UART6SEL_PCLK0       |\ref CLK_CLKDIV4_UART6(x) |
+  * |\ref UART6_MODULE   |\ref CLK_CLKSEL3_UART6SEL_LIRC        |\ref CLK_CLKDIV4_UART6(x) |
+  * |\ref UART7_MODULE   |\ref CLK_CLKSEL3_UART7SEL_HXT         |\ref CLK_CLKDIV4_UART7(x) |
+  * |\ref UART7_MODULE   |\ref CLK_CLKSEL3_UART7SEL_PLL         |\ref CLK_CLKDIV4_UART7(x) |
+  * |\ref UART7_MODULE   |\ref CLK_CLKSEL3_UART7SEL_LXT         |\ref CLK_CLKDIV4_UART7(x) |
+  * |\ref UART7_MODULE   |\ref CLK_CLKSEL3_UART7SEL_HIRC        |\ref CLK_CLKDIV4_UART7(x) |
+  * |\ref UART7_MODULE   |\ref CLK_CLKSEL3_UART7SEL_PCLK1       |\ref CLK_CLKDIV4_UART7(x) |
+  * |\ref UART7_MODULE   |\ref CLK_CLKSEL3_UART7SEL_LIRC        |\ref CLK_CLKDIV4_UART7(x) |
   * |\ref PWM0_MODULE    |\ref CLK_CLKSEL2_PWM0SEL_PLL          | x                        |
   * |\ref PWM0_MODULE    |\ref CLK_CLKSEL2_PWM0SEL_PCLK0        | x                        |
   * |\ref PWM1_MODULE    |\ref CLK_CLKSEL2_PWM1SEL_PLL          | x                        |
   * |\ref PWM1_MODULE    |\ref CLK_CLKSEL2_PWM1SEL_PCLK1        | x                        |
+  * |\ref QSPI0_MODULE   |\ref CLK_CLKSEL2_QSPI0SEL_HXT         | x                        |
+  * |\ref QSPI0_MODULE   |\ref CLK_CLKSEL2_QSPI0SEL_PLL         | x                        |
+  * |\ref QSPI0_MODULE   |\ref CLK_CLKSEL2_QSPI0SEL_PCLK0       | x                        |
+  * |\ref QSPI0_MODULE   |\ref CLK_CLKSEL2_QSPI0SEL_HIRC        | x                        |
   * |\ref SPI0_MODULE    |\ref CLK_CLKSEL2_SPI0SEL_HXT          | x                        |
   * |\ref SPI0_MODULE    |\ref CLK_CLKSEL2_SPI0SEL_PLL          | x                        |
   * |\ref SPI0_MODULE    |\ref CLK_CLKSEL2_SPI0SEL_PCLK1        | x                        |
   * |\ref SPI0_MODULE    |\ref CLK_CLKSEL2_SPI0SEL_HIRC         | x                        |
+  * |\ref BPWM0_MODULE   |\ref CLK_CLKSEL2_BPWM0SEL_PLL         | x                        |
+  * |\ref BPWM0_MODULE   |\ref CLK_CLKSEL2_BPWM0SEL_PCLK0       | x                        |
+  * |\ref BPWM1_MODULE   |\ref CLK_CLKSEL2_BPWM1SEL_PLL         | x                        |
+  * |\ref BPWM1_MODULE   |\ref CLK_CLKSEL2_BPWM1SEL_PCLK1       | x                        |
   * |\ref ADC_MODULE     |\ref CLK_CLKSEL2_ADCSEL_HXT           |\ref CLK_CLKDIV0_ADC(x)   |
   * |\ref ADC_MODULE     |\ref CLK_CLKSEL2_ADCSEL_PLL           |\ref CLK_CLKDIV0_ADC(x)   |
   * |\ref ADC_MODULE     |\ref CLK_CLKSEL2_ADCSEL_PCLK1         |\ref CLK_CLKDIV0_ADC(x)   |
@@ -438,23 +496,33 @@ void CLK_DisableXtalRC(uint32_t u32ClkMask)
   *             - \ref CRC_MODULE
   *             - \ref WDT_MODULE
   *             - \ref WWDT_MODULE
+  *             - \ref RTC_MODULE
   *             - \ref TMR0_MODULE
   *             - \ref TMR1_MODULE
   *             - \ref TMR2_MODULE
   *             - \ref TMR3_MODULE
   *             - \ref CLKO_MODULE
-  *             - \ref ACMP01_MODULE
-  *             - \ref I2C0_MODULE
-  *             - \ref I2C1_MODULE
-  *             - \ref SPI0_MODULE
   *             - \ref UART0_MODULE
   *             - \ref UART1_MODULE
   *             - \ref UART2_MODULE
-  *             - \ref USBD_MODULE
+  *             - \ref UART3_MODULE
+  *             - \ref UART4_MODULE
+  *             - \ref UART5_MODULE
+  *             - \ref UART6_MODULE
+  *             - \ref UART7_MODULE
+  *             - \ref I2C0_MODULE
+  *             - \ref I2C1_MODULE
+  *             - \ref QSPI0_MODULE
+  *             - \ref SPI0_MODULE
   *             - \ref ADC_MODULE
-  *             - \ref USCI0_MODULE
+  *             - \ref ACMP01_MODULE
+  *             - \ref USBD_MODULE
   *             - \ref PWM0_MODULE
   *             - \ref PWM1_MODULE
+  *             - \ref BPWM0_MODULE
+  *             - \ref BPWM1_MODULE
+  *             - \ref USCI0_MODULE
+  *             - \ref USCI1_MODULE
   * @return     None
   * @details    This function enable module clock.
   */
@@ -475,23 +543,33 @@ void CLK_EnableModuleClock(uint32_t u32ModuleIdx)
   *             - \ref CRC_MODULE
   *             - \ref WDT_MODULE
   *             - \ref WWDT_MODULE
+  *             - \ref RTC_MODULE
   *             - \ref TMR0_MODULE
   *             - \ref TMR1_MODULE
   *             - \ref TMR2_MODULE
   *             - \ref TMR3_MODULE
   *             - \ref CLKO_MODULE
-  *             - \ref ACMP01_MODULE
-  *             - \ref I2C0_MODULE
-  *             - \ref I2C1_MODULE
-  *             - \ref SPI0_MODULE
   *             - \ref UART0_MODULE
   *             - \ref UART1_MODULE
   *             - \ref UART2_MODULE
-  *             - \ref USBD_MODULE
+  *             - \ref UART3_MODULE
+  *             - \ref UART4_MODULE
+  *             - \ref UART5_MODULE
+  *             - \ref UART6_MODULE
+  *             - \ref UART7_MODULE
+  *             - \ref I2C0_MODULE
+  *             - \ref I2C1_MODULE
+  *             - \ref QSPI0_MODULE
+  *             - \ref SPI0_MODULE
   *             - \ref ADC_MODULE
-  *             - \ref USCI0_MODULE
+  *             - \ref ACMP01_MODULE
+  *             - \ref USBD_MODULE
   *             - \ref PWM0_MODULE
   *             - \ref PWM1_MODULE
+  *             - \ref BPWM0_MODULE
+  *             - \ref BPWM1_MODULE
+  *             - \ref USCI0_MODULE
+  *             - \ref USCI1_MODULE
   * @return     None
   * @details    This function disable module clock.
   */
@@ -516,6 +594,7 @@ uint32_t CLK_EnablePLL(uint32_t u32PllClkSrc, uint32_t u32PllFreq)
 {
     uint32_t u32PllSrcClk, u32NR, u32NF, u32NO, u32CLK_SRC, u32Outdiv;
     uint32_t u32Tmp, u32Tmp2, u32Tmp3, u32Min, u32MinNF, u32MinNR;
+    uint32_t u32PLL_UpperLimit;
 
     /* Disable PLL first to avoid unstable when setting PLL */
     CLK_DisablePLL();
@@ -557,11 +636,25 @@ uint32_t CLK_EnablePLL(uint32_t u32PllClkSrc, uint32_t u32PllFreq)
     /* Select "NO" according to request frequency */
     /* Constraint: PLL output frequency must <= 96MHz */
     /*             PLL output frequency must > 50.14MHz to meet all constraints */
-    if((u32PllFreq <= FREQ_96MHZ) && (u32PllFreq >= FREQ_51MHZ))
+    if ((GET_CHIP_SERIES_NUM == CHIP_SERIES_NUM_G) || (GET_CHIP_SERIES_NUM == CHIP_SERIES_NUM_I))
+        u32PLL_UpperLimit = FREQ_144MHZ;
+    else
+        u32PLL_UpperLimit = FREQ_96MHZ;
+
+    if((u32PllFreq <= u32PLL_UpperLimit) && (u32PllFreq >= FREQ_51MHZ))
     {
-        u32NO = 4;
-        u32Outdiv = 3;
-        u32PllFreq = u32PllFreq << 2;   /* u32PllFreq = (FIN * NF / NR) now */
+        if (u32PllFreq <= FREQ_96MHZ)
+        {
+            u32NO = 4;
+            u32Outdiv = 3;
+            u32PllFreq = u32PllFreq << 2;   /* u32PllFreq = (FIN * NF / NR) now */
+        }
+        else
+        {
+            u32NO = 2;
+            u32Outdiv = 2;
+            u32PllFreq = u32PllFreq << 1;   /* u32PllFreq = (FIN * NF / NR) now */
+        }
     }
     else
     {

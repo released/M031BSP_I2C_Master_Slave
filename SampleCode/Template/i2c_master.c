@@ -12,6 +12,11 @@ volatile uint8_t g_au8Reg;
 volatile uint8_t g_u8EndFlag = 0;
 uint8_t *g_au8Buffer;
 
+uint8_t test_case_reg = 0x00;
+uint8_t test_case_len = 0x02;
+uint8_t test_case_lsb = 0x3C;
+uint8_t test_case_msb = 0x00;
+
 typedef void (*I2C_FUNC)(uint32_t u32Status);
 
 I2C_FUNC __IO I2Cx_Master_HandlerFn = NULL;
@@ -278,7 +283,7 @@ void I2Cx_Read_Multi_FromSlave(uint8_t address,uint8_t reg,uint8_t *data,uint16_
 void I2Cx_Master_Init(void)
 {    
     /* Open I2C module and set bus clock */
-    I2C_Open(MASTER_I2C, 400000);
+    I2C_Open(MASTER_I2C, 100000);
     
      /* Set I2C 4 Slave Addresses */            
     I2C_SetSlaveAddr(MASTER_I2C, 0, 0x15, 0);   /* Slave Address : 0x15 */
@@ -321,6 +326,22 @@ void I2Cx_Master_example (uint8_t res)
 	switch(res)
 	{
 		case 1 :
+			addr = 0x6A;
+			reg = test_case_reg ;
+			len = test_case_len ;
+			u8TxData[0] = test_case_lsb ;
+			u8TxData[1] = test_case_msb ;
+
+			#if defined (MASTER_I2C_USE_IRQ)
+			I2Cx_Write_Multi_ToSlave(addr,reg,u8TxData,len);
+			#elif defined (MASTER_I2C_USE_POLLING)
+			I2C_WriteMultiBytesOneReg(MASTER_I2C, addr, reg, u8TxData, len);		
+			#endif
+			
+			printf("I2Cx_Write finish\r\n");
+			printf("addr : 0x%2X, reg : 0x%2X , data (%2d) : \r\n",addr,reg,cnt++);
+
+			#if 0
 			addr = 0x15;
 			reg = 0x66;
 			len = 10;
@@ -345,10 +366,44 @@ void I2Cx_Master_example (uint8_t res)
 			
 			printf("I2Cx_Write finish\r\n");
 			printf("addr : 0x%2X, reg : 0x%2X , data (%2d) : \r\n",addr,reg,cnt++);
-			
+			#endif
+
 			break;
 
 		case 2 :
+
+			addr = 0x6A;
+			reg = test_case_reg ;
+			len = test_case_len ;
+		
+		
+			//clear data
+			for(i = 0; i < 16; i++)
+			{
+				u8RxData[i] = 0;
+			}
+
+			#if defined (MASTER_I2C_USE_IRQ)	
+			I2Cx_Read_Multi_FromSlave(addr,reg,u8RxData,len);
+			#elif defined (MASTER_I2C_USE_POLLING)
+			I2C_ReadMultiBytesOneReg(MASTER_I2C, addr, reg, u8RxData, len);
+			#endif
+			
+			printf("\r\nI2Cx_Read  finish\r\n");
+			
+			for(i = 0; i < 16 ; i++)
+			{
+				printf("0x%2X ,", u8RxData[i]);
+		   	 	if ((i+1)%8 ==0)
+		        {
+		            printf("\r\n");
+		        }		
+			}
+
+			printf("\r\n\r\n\r\n");
+
+
+			#if 0
 			addr = 0x15;
 			reg = 0x66;
 			len = 10;
@@ -377,6 +432,7 @@ void I2Cx_Master_example (uint8_t res)
 			}
 
 			printf("\r\n\r\n\r\n");
+			#endif
 		
 			break;
 
@@ -595,6 +651,5 @@ void I2Cx_Master_example (uint8_t res)
 			break;
 	}	
 }
-
 
 
